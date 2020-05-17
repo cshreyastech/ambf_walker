@@ -122,8 +122,11 @@ class Model(object):
         self.state = q + qd
 
     def calculate_dynamics(self, qdd):
+        # print("self._joint_num", self._joint_num)
+        # print("self._model", self._model)
         tau = np.asarray([0.0] * self._joint_num)
         rbdl.InverseDynamics(self._model, self.q[0:6], self.qd[0:6], qdd[0:6], tau)
+        
         return tau
 
     def get_right_leg(self):
