@@ -77,11 +77,8 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
         com = {}
         inertia = {}
 
-        bodies["Right"] = {}
-
-
-        bodies["Right"] = {}
-        bodies["Left"] = {}
+        # bodies["Right"] = {}
+        # bodies["Left"] = {}
         segments = ["thighrob", "shankrob", "footrob"]
 
         mass["Hiprob"] = 2.37
@@ -142,7 +139,7 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
         xtrans.r = parent_dist["Leftshankrob"]
         self.Leftshankrob = model.AddBody(self.Leftthighrob, xtrans, joint_rot_z, bodies["Leftshankrob"], "Leftshankrob")
         xtrans.r = parent_dist["Leftfootrob"]
-        self.leftfootrob = model.AddBody(self.Leftshankrob, xtrans, joint_rot_z, bodies["Leftfootrob"], "Leftfootrob")
+        self.Leftfootrob = model.AddBody(self.Leftshankrob, xtrans, joint_rot_z, bodies["Leftfootrob"], "Leftfootrob")
 
         xtrans.r = parent_dist["Rightthighrob"]
         self.Rightthighrob = model.AddBody(self.Hiprob, xtrans, joint_rot_z, bodies["Rightthighrob"], "Rightthighrob")
@@ -150,10 +147,113 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
         xtrans.r = parent_dist["Rightshankrob"]
         self.Rightshankrob = model.AddBody(self.Rightthighrob, xtrans, joint_rot_z, bodies["Rightshankrob"], "Rightshankrob")
         xtrans.r = parent_dist["Rightfootrob"]
-        self.right_foot = model.AddBody(self.Rightshankrob, xtrans, joint_rot_z, bodies["Rightfootrob"], "Rightfootrob")
+        self.Lightfootrob = model.AddBody(self.Rightshankrob, xtrans, joint_rot_z, bodies["Rightfootrob"], "Rightfootrob")
+
+        
+###########################################################################################
+        bodies["head"] = {}
+        # bodies["Left"] = {}
+           
+        segments = ["thigh", "shank", "foot"]
+
+        mass["body"] = 2.37
+        mass["head"] = 1.0
+        mass["Crutch1"] = 1.0
+        mass["Crutch2"] = 1.0
+
+
+        mass["rightthigh"] = 2.11
+        mass["leftthigh"] = 2.11
+        mass["rightshank"] = 1.28
+        mass["leftshank"] = 1.28
+        mass["rightfoot"] = 0.86
+        mass["leftfoot"] = 0.86
+
+        parent_dist = {}
+        parent_dist["body"] = np.array([0.0, -0.1273, 0.72])
+        parent_dist["head"] = np.array([0.0, -0.1273, 0.72])
+
+        parent_dist["Crutch1"] = np.array([0.493, -0.8677, -0.3804])
+        parent_dist["Crutch2"] = np.array([-0.4642, -0.8677, -0.3804])
+
+        parent_dist["leftthigh"] = np.array([0.0043, -0.1536, 0.0923])
+        parent_dist["leftshank"] = np.array([0.1466, -0.1308, -0.3343])
+        parent_dist["leftfoot"] = np.array([0.1466, -0.1014, -0.7709])
+
+        parent_dist["rightthigh"] = np.array([-0.0066, -0.1536, 0.0923])
+        parent_dist["rightshank"] = np.array([-0.149, -0.1308, -0.3343])
+        parent_dist["rightfoot"] = np.array([-0.149, -0.1014, -0.7709])
+
+
+        inertia["body"] = np.diag([ 0.0,0.0,0.0])
+        inertia["head"] = np.diag([ 0.0,0.0,0.0])
+
+        inertia["leftthigh"] = np.diag([0.0, 0.0, 0.07])
+        inertia["leftshank"] = np.diag([0.18, 0.18, 0.0])
+        inertia["leftfoot"] = np.diag([0.07, 0.07, 0.0])
+
+        inertia["rightthigh"] = np.diag([0.0, 0.00, 0.07])
+        inertia["rightshank"] = np.diag([0.18, 0.18, 0.0])
+        inertia["rightfoot"] = np.diag([0.07, 0.07, 0.0])
+
+        com["Crutch1"] = np.array([0.0, 0.0, 0.0])
+        com["Crutch2"] = np.array([0.0, 0.0, 0.0])
+
+        com["leftthigh"] = np.array([0.1009, 0.0088, -0.1974])
+        com["leftshank"] = np.array([-0.0305, 0.0174, -0.2118])
+        com["leftfoot"] = np.array([-0.0305, -0.0833, -0.0036])
+
+        com["rightthigh"] = np.array([-0.1009, 0.0088, -0.1974])
+        com["rightshank"] = np.array([0.0305, 0.0174, -0.2118])
+        com["rightfoot"] = np.array([0.0305, -0.0833, -0.0036])
+
+        # hip_body = rbdl.Body.fromMassComInertia(mass["Hiprob"], com["Hiprob"], inertia["Hiprob"])
+        for segs in segments:
+            bodies["right" + segs] = rbdl.Body.fromMassComInertia(mass["right" + segs], com["right" + segs], inertia["right" + segs])
+            bodies["left" + segs] = rbdl.Body.fromMassComInertia(mass["left" + segs], com["left" + segs], inertia["left" + segs])
+
+        xtrans = rbdl.SpatialTransform()
+        xtrans.r = np.array([0.0, 0.0, 0.0])
+        xtrans.E = np.eye(3)
+
+        # xtrans.r = parent_dist["humanbody"]
+        # self.humanbody = model.AddBody(self.Hiprob, xtrans, joint_rot_z, bodies["humanbody"], "humanbody")
+
+        # bodies["head"] = rbdl.Body.fromMassComInertia(mass["head"], com["head"], inertia["head"])
+        # xtrans.E = np.eye(3)
+        # xtrans.r = parent_dist["head"]
+        # self.head = model.AddBody(self.Hiprob, xtrans, joint_rot_z, bodies["head"], "head")
+
+
+
+
+        xtrans.r = parent_dist["leftthigh"]
+        self.leftthigh = model.AddBody(self.Hiprob, xtrans, joint_rot_z, bodies["leftthigh"], "leftthigh")
+        xtrans.E = np.eye(3)
+        xtrans.r = parent_dist["leftshank"]
+        self.leftshank = model.AddBody(self.leftthigh, xtrans, joint_rot_z, bodies["leftshank"], "leftshank")
+        xtrans.r = parent_dist["leftfoot"]
+        self.leftfoot = model.AddBody(self.leftshank, xtrans, joint_rot_z, bodies["leftfoot"], "leftfoot")
+
+        xtrans.r = parent_dist["rightthigh"]
+        self.rightthigh = model.AddBody(self.Hiprob, xtrans, joint_rot_z, bodies["rightthigh"], "rightthigh")
+        xtrans.E = np.eye(3)
+        xtrans.r = parent_dist["rightshank"]
+        self.rightshank = model.AddBody(self.rightthigh, xtrans, joint_rot_z, bodies["rightshank"], "rightshank")
+        xtrans.r = parent_dist["rightfoot"]
+        self.rightfoot = model.AddBody(self.Rightshankrob, xtrans, joint_rot_z, bodies["rightfoot"], "rightfoot")
 
 
         model.gravity = np.array([0, 0, -9.81])
-
-
         return model
+
+    # index needs to be updated
+    def update_state(self, q, qd):
+        print("update_state")
+        self.get_left_leg().hip.angle.z =  q[0]
+        self.get_left_leg().knee.angle.z = q[1]
+        self.get_left_leg().ankle.angle.z = q[2]
+
+        self.get_right_leg().hip.angle.z = q[3]
+        self.get_right_leg().knee.angle.z = q[4]
+        self.get_right_leg().ankle.angle.z = q[5]

@@ -123,7 +123,7 @@ class ExoHumanModel(object):
     def calculate_dynamics(self, qdd):
         # tau = np.asarray([0.0] * self._joint_num)
         tau = np.asarray([0.0] * 22)
-        # rbdl.InverseDynamics(self._model, self.q[0:22], self.qd[0:22], qdd[0:22], tau)
+        rbdl.InverseDynamics(self._model, self.q[0:22], self.qd[0:22], qdd[0:22], tau)
         
         return tau
 
