@@ -9,8 +9,8 @@ from Utlities import Plotter
 import rospy
 import numpy as np
 from std_msgs.msg import Float32MultiArray
-from Model import Exoskeleton
-from Controller import DynController
+from Model import ExoHuman
+from Controller import DynControllerExoHuman
 import time
 from Controller import PDController
 
@@ -44,31 +44,16 @@ if __name__ == "__main__":
     _client = Client()
     _client.connect()
     rate = rospy.Rate(1000)
-    LARRE = Exoskeleton.Exoskeleton(_client, 56, 1.56)
-    #leg_plot = Plotter.Plotter(LARRE)
-
-    # num_joints = LARRE._handle.get_num_joints() # Get the number of joints of this object
-    # children_names = LARRE._handle.get_children_names() # Get a list of children names belonging to this obj
+    EXOHUMAN =  ExoHuman.ExoHuman(_client, 56, 1.56)
+    
+    # num_joints = EXOHUMAN._handle.get_num_joints() # Get the number of joints of this object
+    # children_names = EXOHUMAN._handle.get_children_names() # Get a list of children names belonging to this obj
 
     # print(num_joints)
     # print(children_names)
 
-
-    Kp = np.zeros((7, 7))
-    Kd = np.zeros((7, 7))
-    # Kp[0, 0] = 70.0
-    # Kd[0, 0] = 10.0
-    # Kp[1, 1] = 135.0
-    # Kd[1, 1] = 1.5
-    # Kp[2, 2] = 110.0
-    # Kd[2, 2] = 0.5
-    #
-    # Kp[3, 3] = 70.0
-    # Kd[3, 3] = 10.0
-    # Kp[4, 4] = 135.0
-    # Kd[4, 4] = 1.5
-    # Kp[5, 5] = 110.0
-    # Kd[5, 5] = 0.5
+    Kp = np.zeros((22, 22))
+    Kd = np.zeros((22, 22))
 
     Kp_hip = 100.0
     Kd_hip = 2.0
@@ -81,19 +66,25 @@ if __name__ == "__main__":
 
     Kp[0, 0] = Kp_hip
     Kd[0, 0] = Kd_hip
+    
     Kp[1, 1] = Kp_knee
     Kd[1, 1] = Kd_knee
+
     Kp[2, 2] = Kp_ankle
     Kd[2, 2] = Kd_ankle
 
     Kp[3, 3] = Kp_hip
     Kd[3, 3] = Kd_hip
+
     Kp[4, 4] = Kp_knee
     Kd[4, 4] = Kd_knee
+
     Kp[5, 5] = Kp_ankle
     Kd[5, 5] = Kd_ankle
+
     body_controller = PDController.PDController(np.array([2000]), np.array([100]) )
-    crl = DynController.DynController(LARRE, Kp, Kd)
+    crl = DynControllerExoHuman.DynControllerExoHuman(EXOHUMAN, Kp, Kd)
+
     dt = 0.001
     tf = 2.0
     tf2 = 10.0
@@ -102,8 +93,8 @@ if __name__ == "__main__":
     q_ankle, qd_ankle, qdd_ankle = get_traj(-0.349, 0.157+0.1, 0.0, 0.0, tf, dt)
 
     count = 0
-    LARRE.handle.set_rpy(0, 0, 0)
-    LARRE.handle.set_pos(0, 0, .1)
+    EXOHUMAN._handle.set_rpy(0, 0, 0)
+    EXOHUMAN._handle.set_pos(0, 0, .1)
     time.sleep(5)
     height = 0.1
     count2 = 0
@@ -113,38 +104,30 @@ if __name__ == "__main__":
         count = min(count, int(tf/dt)-1)
         if count == 1999:
             if height < -0.1:
-                LARRE.handle.set_rpy(0.25, 0, 0)
-                LARRE.handle.set_pos(0, 0, height)
+                EXOHUMAN._handle.set_rpy(0.25, 0, 0)
+                EXOHUMAN._handle.set_pos(0, 0, height)
             else:
                 height -= 0.001
-                LARRE.handle.set_rpy(0.25, 0, 0)
-                LARRE.handle.set_pos(0, 0, height)
+                EXOHUMAN._handle.set_rpy(0.25, 0, 0)
+                EXOHUMAN._handle.set_pos(0, 0, height)
 
         else:
-            LARRE.handle.set_rpy(0.25, 0, 0.0)
-            LARRE.handle.set_pos(0, 0, height)
+            EXOHUMAN._handle.set_rpy(0.25, 0, 0.0)
+            EXOHUMAN._handle.set_pos(0, 0, height)
 
         q_d = np.array([q_hip[count].item(), q_knee[count].item(), q_ankle[count].item(),
-                        q_hip[count].item(), q_knee[count].item(), q_ankle[count].item(),0.0])
+                        q_hip[count].item(), q_knee[count].item(), q_ankle[count].item(),
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         qd_d = np.array([qd_hip[count].item(), qd_knee[count].item(), qd_ankle[count].item(),
-                         qd_hip[count].item(), qd_knee[count].item(), qd_ankle[count].item(),0.0])
+                         qd_hip[count].item(), qd_knee[count].item(), qd_ankle[count].item(),
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         qdd_d = np.array([qdd_hip[count].item(), qdd_knee[count].item(), qdd_ankle[count].item(),
-                          qdd_hip[count].item(), qdd_knee[count].item(), qdd_ankle[count].item(),0.0])
+                          qdd_hip[count].item(), qdd_knee[count].item(), qdd_ankle[count].item(),
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         crl.calc_tau(q_d, qd_d, qdd_d)
-        msg_vel.data = LARRE.q
-        msg_goal.data = q_d
-        #leg_plot.update()
-        pub.publish(msg_vel)
-        pub_goal.publish(msg_goal)
-        count += 1
-        rate.sleep()
-
-    _client.clean_up()
-
-
-
-
-
