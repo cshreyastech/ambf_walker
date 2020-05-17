@@ -23,19 +23,19 @@ class ExoHumanModel(object):
         self._updater = Thread(target=self.update)
         self._enable_control = False
         
-        left_joints = {}
-        right_joints = {}
+        # left_joints = {}
+        # right_joints = {}
 
-        for joint in (left_joints, right_joints):
-            for output in ["Hip", "Knee", "Ankle"]:
-                angle = Point.Point(0, 0, 0)
-                force = Point.Point(0, 0, 0)
-                moment = Point.Point(0, 0, 0)
-                power = Point.Point(0, 0, 0)
-                joint[output] = Joint.Joint(angle, moment, power, force)
+        # for joint in (left_joints, right_joints):
+        #     for output in ["Hip", "Knee", "Ankle"]:
+        #         angle = Point.Point(0, 0, 0)
+        #         force = Point.Point(0, 0, 0)
+        #         moment = Point.Point(0, 0, 0)
+        #         power = Point.Point(0, 0, 0)
+        #         joint[output] = Joint.Joint(angle, moment, power, force)
 
-        self._left_leg_exoskeleton = Leg.Leg(left_joints["Hip"], left_joints["Knee"], left_joints["Ankle"])
-        self._right_leg_exoskeleton = Leg.Leg(right_joints["Hip"], right_joints["Knee"], right_joints["Ankle"])
+        # self._left_leg_exoskeleton = Leg.Leg(left_joints["Hip"], left_joints["Knee"], left_joints["Ankle"])
+        # self._right_leg_exoskeleton = Leg.Leg(right_joints["Hip"], right_joints["Knee"], right_joints["Ankle"])
                 
 
     def update_torque(self, tau):
@@ -74,6 +74,12 @@ class ExoHumanModel(object):
     def qd(self, value):
         value[4] *= -1
         value[10] *= -1
+        value[12] *= -1
+        value[13] *= -1
+        value[14] *= -1
+        value[15] *= -1
+        value[17] *= -1
+        value[18] *= -1
         self._qd = np.asarray(value)
 
     @property
@@ -123,6 +129,9 @@ class ExoHumanModel(object):
     def calculate_dynamics(self, qdd):
         # tau = np.asarray([0.0] * self._joint_num)
         tau = np.asarray([0.0] * 22)
+        # print(self.q)
+        # print(self.qd)
+        # print(qdd)
         rbdl.InverseDynamics(self._model, self.q[0:22], self.qd[0:22], qdd[0:22], tau)
         
         return tau

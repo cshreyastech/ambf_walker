@@ -17,7 +17,7 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
         self.qd = 22 * [0.0]
         time.sleep(2)
         self._state = (self._q, self._qd)
-        # self._updater.start() this has to be uncommented
+        self._updater.start()
 
 
     def update_torque(self, tau):
@@ -29,13 +29,13 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
         tau[7] = 0.0
         tau[9] = 0.0
         tau[11] = 0.0
-        tau[12] = 0.0
-        tau[13] = 0.0
-        tau[14] = 0.0
-        tau[15] = 0.0
+        tau[12] *= -1
+        tau[13] *= -1
+        tau[14] *= -1
+        tau[15] *= -1
         tau[16] = 0.0
-        tau[17] = 0.0
-        tau[18] = 0.0
+        tau[17] *= -1
+        tau[18] *= -1
         tau[19] = 0.0
         tau[20] = 0.0
         tau[21] = 0.0
@@ -53,12 +53,24 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
     def q(self, value):
         value[4] *= -1
         value[10] *= -1
+        value[12] *= -1
+        value[13] *= -1
+        value[14] *= -1
+        value[15] *= -1
+        value[17] *= -1
+        value[18] *= -1
         self._q = np.array(value)
 
     @qd.setter
     def qd(self, value):
         value[4] *= -1
         value[10] *= -1
+        value[12] *= -1
+        value[13] *= -1
+        value[14] *= -1
+        value[15] *= -1
+        value[17] *= -1
+        value[18] *= -1
         self._qd = np.array(value)
 
     @property
@@ -151,7 +163,7 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
 
         
 ###########################################################################################
-        bodies["head"] = {}
+        # bodies["head"] = {}
         # bodies["Left"] = {}
            
         segments = ["thigh", "shank", "foot"]
@@ -245,15 +257,5 @@ class ExoHuman(ExoHumanModel.ExoHumanModel):
 
 
         model.gravity = np.array([0, 0, -9.81])
+
         return model
-
-    # index needs to be updated
-    def update_state(self, q, qd):
-        print("update_state")
-        self.get_left_leg().hip.angle.z =  q[0]
-        self.get_left_leg().knee.angle.z = q[1]
-        self.get_left_leg().ankle.angle.z = q[2]
-
-        self.get_right_leg().hip.angle.z = q[3]
-        self.get_right_leg().knee.angle.z = q[4]
-        self.get_right_leg().ankle.angle.z = q[5]

@@ -46,11 +46,13 @@ if __name__ == "__main__":
     rate = rospy.Rate(1000)
     EXOHUMAN =  ExoHuman.ExoHuman(_client, 56, 1.56)
     
-    # num_joints = EXOHUMAN._handle.get_num_joints() # Get the number of joints of this object
-    # children_names = EXOHUMAN._handle.get_children_names() # Get a list of children names belonging to this obj
+    num_joints = EXOHUMAN._handle.get_num_joints() # Get the number of joints of this object
+    children_names = EXOHUMAN._handle.get_children_names() # Get a list of children names belonging to this obj
 
     # print(num_joints)
     # print(children_names)
+    # for i in range(0, num_joints):
+    #     print(i, children_names[i])
 
     Kp = np.zeros((22, 22))
     Kd = np.zeros((22, 22))
@@ -92,6 +94,10 @@ if __name__ == "__main__":
     q_knee, qd_knee, qdd_knee = get_traj(0.0, 0.20, 0.0, 0., tf, dt)
     q_ankle, qd_ankle, qdd_ankle = get_traj(-0.349, 0.157+0.1, 0.0, 0.0, tf, dt)
 
+    # q_hip_human, qd_hip_human, qdd_hip_human = get_traj(0.0, -0.3, 0.0, 0.0, tf,dt)
+    # q_knee_human, qd_knee_human, qdd_knee = get_traj(0.0, 0.20, 0.0, 0., tf, dt)
+    # q_ankle_human, qd_ankle_human, qdd_ankle = get_traj(-0.349, 0.157+0.1, 0.0, 0.0, tf, dt)
+
     count = 0
     EXOHUMAN._handle.set_rpy(0, 0, 0)
     EXOHUMAN._handle.set_pos(0, 0, .1)
@@ -117,15 +123,21 @@ if __name__ == "__main__":
 
         q_d = np.array([q_hip[count].item(), 0, q_knee[count].item(), 0, q_ankle[count].item(), 0,
                         q_hip[count].item(), 0, q_knee[count].item(), 0, q_ankle[count].item(), 0,
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                        q_ankle[count].item(), q_ankle[count].item(), q_hip[count].item(), 
+                        q_knee[count].item(), 0.0, q_hip[count].item(), q_knee[count].item(), 
+                        0.0, 0.0, 0.0])
 
         qd_d = np.array([qd_hip[count].item(), 0, qd_knee[count].item(), 0, qd_ankle[count].item(), 0,
-                         qd_hip[count].item(), 0, qd_knee[count].item(), 0, qd_ankle[count].item(), 0,
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                        qd_hip[count].item(), 0, qd_knee[count].item(), 0, qd_ankle[count].item(), 0,
+                        qd_ankle[count].item(), qd_ankle[count].item(), qd_hip[count].item(), 
+                        qd_knee[count].item(), 0.0, qd_hip[count].item(), qd_knee[count].item(), 
+                        0.0, 0.0, 0.0])
 
         qdd_d = np.array([qdd_hip[count].item(), 0, qdd_knee[count].item(), 0, qdd_ankle[count].item(), 0,
-                          qdd_hip[count].item(), 0, qdd_knee[count].item(), 0, qdd_ankle[count].item(), 0,
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                        qdd_hip[count].item(), 0, qdd_knee[count].item(), 0, qdd_ankle[count].item(), 0,
+                        qdd_ankle[count].item(), qdd_ankle[count].item(), qdd_hip[count].item(), 
+                        qdd_knee[count].item(), 0.0, qdd_hip[count].item(), qdd_knee[count].item(), 
+                        0.0, 0.0, 0.0])
 
         crl.calc_tau(q_d, qd_d, qdd_d)
         msg_vel.data = EXOHUMAN.q
