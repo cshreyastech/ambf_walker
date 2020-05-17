@@ -67,20 +67,20 @@ if __name__ == "__main__":
     Kp[0, 0] = Kp_hip
     Kd[0, 0] = Kd_hip
     
-    Kp[1, 1] = Kp_knee
-    Kd[1, 1] = Kd_knee
+    Kp[2, 2] = Kp_knee
+    Kd[2, 2] = Kd_knee
 
-    Kp[2, 2] = Kp_ankle
-    Kd[2, 2] = Kd_ankle
+    Kp[4, 4] = Kp_ankle
+    Kd[4, 4] = Kd_ankle
 
-    Kp[3, 3] = Kp_hip
-    Kd[3, 3] = Kd_hip
+    Kp[6, 6] = Kp_hip
+    Kd[6, 6] = Kd_hip
 
-    Kp[4, 4] = Kp_knee
-    Kd[4, 4] = Kd_knee
+    Kp[8, 8] = Kp_knee
+    Kd[8, 8] = Kd_knee
 
-    Kp[5, 5] = Kp_ankle
-    Kd[5, 5] = Kd_ankle
+    Kp[10, 10] = Kp_ankle
+    Kd[10, 10] = Kd_ankle
 
     body_controller = PDController.PDController(np.array([2000]), np.array([100]) )
     crl = DynControllerExoHuman.DynControllerExoHuman(EXOHUMAN, Kp, Kd)
@@ -115,19 +115,25 @@ if __name__ == "__main__":
             EXOHUMAN._handle.set_rpy(0.25, 0, 0.0)
             EXOHUMAN._handle.set_pos(0, 0, height)
 
-        q_d = np.array([q_hip[count].item(), q_knee[count].item(), q_ankle[count].item(),
-                        q_hip[count].item(), q_knee[count].item(), q_ankle[count].item(),
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        q_d = np.array([q_hip[count].item(), 0, q_knee[count].item(), 0, q_ankle[count].item(), 0,
+                        q_hip[count].item(), 0, q_knee[count].item(), 0, q_ankle[count].item(), 0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        qd_d = np.array([qd_hip[count].item(), qd_knee[count].item(), qd_ankle[count].item(),
-                         qd_hip[count].item(), qd_knee[count].item(), qd_ankle[count].item(),
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        qd_d = np.array([qd_hip[count].item(), 0, qd_knee[count].item(), 0, qd_ankle[count].item(), 0,
+                         qd_hip[count].item(), 0, qd_knee[count].item(), 0, qd_ankle[count].item(), 0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        qdd_d = np.array([qdd_hip[count].item(), qdd_knee[count].item(), qdd_ankle[count].item(),
-                          qdd_hip[count].item(), qdd_knee[count].item(), qdd_ankle[count].item(),
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        qdd_d = np.array([qdd_hip[count].item(), 0, qdd_knee[count].item(), 0, qdd_ankle[count].item(), 0,
+                          qdd_hip[count].item(), 0, qdd_knee[count].item(), 0, qdd_ankle[count].item(), 0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         crl.calc_tau(q_d, qd_d, qdd_d)
+        msg_vel.data = EXOHUMAN.q
+        msg_goal.data = q_d
+        #leg_plot.update()
+        pub.publish(msg_vel)
+        pub_goal.publish(msg_goal)
+        count += 1
+        rate.sleep()
+
+    _client.clean_up()
