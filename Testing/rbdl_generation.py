@@ -18,7 +18,8 @@ def yaml_dumper(filepath):
         yaml.dump(data, file_descriptor)
 
 
-file_path = "/home/nathanielgoldfarb/ambf_walker/ambf_models/LARRE.yaml"
+# file_path = "/home/nathanielgoldfarb/ambf_walker/ambf_models/LARRE.yaml"
+file_path = "/home/cstx2/Downloads/New_human/test.yaml"
 data = yaml_loader(file_path)
 
 Bodies = data.get('bodies')

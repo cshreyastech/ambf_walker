@@ -84,6 +84,26 @@ if __name__ == "__main__":
     Kp[10, 10] = Kp_ankle
     Kd[10, 10] = Kd_ankle
 
+
+    Kp[14, 14] = Kp_hip
+    Kd[14, 14] = Kd_hip
+    
+    Kp[15, 15] = Kp_knee
+    Kd[15, 15] = Kd_knee
+
+    Kp[12, 12] = Kp_ankle
+    Kd[12, 12] = Kd_ankle
+
+    Kp[17, 17] = Kp_hip
+    Kd[17, 17] = Kd_hip
+
+    Kp[18, 18] = Kp_knee
+    Kd[18, 18] = Kd_knee
+
+    Kp[13, 13] = Kp_ankle
+    Kd[13, 13] = Kd_ankle
+
+
     body_controller = PDController.PDController(np.array([2000]), np.array([100]) )
     crl = DynControllerExoHuman.DynControllerExoHuman(EXOHUMAN, Kp, Kd)
 

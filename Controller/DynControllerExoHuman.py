@@ -4,6 +4,7 @@ import numpy as np
 from std_msgs.msg import Float32MultiArray
 from Model import ExoHumanModel
 import PDController
+import random
 
 class DynControllerExoHuman():
 
@@ -46,6 +47,7 @@ class DynControllerExoHuman():
                 aq = qdd + aq
         tau = self._model.calculate_dynamics(aq)
 
+    
         print(tau)
         msg = Float32MultiArray()
         msg.data = tau.tolist()
